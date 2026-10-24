@@ -1,0 +1,6 @@
+node_modules/
+.omc/
+logs/
+.DS_Store
+.claude/*.local.*
+CLAUDE.local.md

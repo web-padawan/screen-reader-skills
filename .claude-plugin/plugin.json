@@ -1,0 +1,10 @@
+{
+  "name": "screen-reader-skills",
+  "description": "Run VoiceOver (macOS) or NVDA (Windows) through Guidepup on a dev page with a free text or file scenario, and report what the reader says at each step. Skills: voiceover-safari, voiceover-chrome, nvda-chrome and nvda-firefox.",
+  "author": {
+    "name": "Serhii Kulykov",
+    "url": "https://github.com/web-padawan"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["accessibility", "screen-reader", "voiceover", "nvda", "guidepup"]
+}

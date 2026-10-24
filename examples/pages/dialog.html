@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Native dialog</title>
+  </head>
+  <body>
+    <h1>Native dialog</h1>
+    <button id="open" type="button">Open settings</button>
+    <dialog id="settings" aria-labelledby="settings-title">
+      <h2 id="settings-title">Settings</h2>
+      <label>Name <input name="name" /></label>
+      <form method="dialog"><button>Close</button></form>
+    </dialog>
+    <script>
+      document.querySelector('#open').addEventListener('click', () => {
+        document.querySelector('#settings').showModal();
+      });
+    </script>
+  </body>
+</html>

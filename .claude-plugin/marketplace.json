@@ -1,0 +1,18 @@
+{
+  "name": "screen-reader-skills",
+  "metadata": {
+    "description": "Local marketplace for the screen reader skills."
+  },
+  "owner": {
+    "name": "Serhii Kulykov",
+    "url": "https://github.com/web-padawan"
+  },
+  "plugins": [
+    {
+      "name": "screen-reader-skills",
+      "source": "./",
+      "description": "VoiceOver and NVDA runs through Guidepup on a dev page.",
+      "category": "testing"
+    }
+  ]
+}
