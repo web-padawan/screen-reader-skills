@@ -57,9 +57,15 @@ else fail(`Node ${process.versions.node} is too old`, `Install Node ${MIN_NODE.j
 if (process.platform === reader.platform) ok(`platform ${reader.os}`);
 else fail(`${readerName} runs on ${reader.os} only. This is ${process.platform}.`, 'Use a machine with that OS.');
 
-const missing = ['@guidepup/guidepup', 'playwright'].filter(
-  (name) => !fs.existsSync(path.join(root, 'node_modules', name, 'package.json')),
-);
+// Resolves like the reader scripts do, so a package that npm hoisted to a parent node_modules counts.
+const missing = ['@guidepup/guidepup', 'playwright'].filter((name) => {
+  try {
+    import.meta.resolve(name);
+    return false;
+  } catch {
+    return true;
+  }
+});
 if (missing.length) {
   fail(`${missing.join(' and ')} missing in ${root}`, `Run: npm ci --prefix "${root}". README: Install.`);
 } else {
