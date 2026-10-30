@@ -1,10 +1,11 @@
 # NVDA
 
-Verified for NVDA with Chrome and Firefox on Windows, through Guidepup 0.36.4 and its portable NVDA. The NVDA code of Guidepup 0.37.0 is the same. The `nvda-chrome` and `nvda-firefox` skills hold the facts of one browser.
+Verified for NVDA with Chrome and Firefox on Windows, through Guidepup 0.39.0 and its portable NVDA 2026.3. Seven scenarios of the cleanslate repository gave the same phrases as with Guidepup 0.36.4 and NVDA 2026.2. The `nvda-chrome` and `nvda-firefox` skills hold the facts of one browser.
 
 ## Before a run
 
 - **Profile**: Guidepup starts its own portable NVDA. An installed NVDA and its settings do not apply. The script disables the Speech Viewer, because its window takes the focus from the browser and adds Tab stops.
+- **Installed NVDA**: only one NVDA can run. If an installed NVDA runs, the start quits it, and the stop starts it again. With `DEBUG=guidepup:NVDA`, the run prints "Quitting an NVDA that Guidepup did not start" and "Starting the user's NVDA again". If no NVDA runs, the start quits nothing. Guidepup 0.37.0 and earlier quit the installed NVDA and did not start it again.
 - **Dev server**: `localhost` is the Windows machine. For a server on another machine, start it on `0.0.0.0` and pass its IP address.
 - **Page title**: the script finds the browser window by the page title. Do not open the same page in another window of that browser.
 - **One run per shell call**: in a loop, the runs after the first cannot focus the browser. NVDA then reads the terminal.

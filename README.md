@@ -30,7 +30,7 @@ Supported scenario formats: free text, markdown file or a JSON file. See [refere
 
 The plugin cache copies the folder with its `node_modules`. Run `npm ci` before an install or an update. If `check.mjs` reports missing modules, run the `npm ci --prefix` command that it prints.
 
-To update after a change, commit and run `claude plugin update screen-reader-skills@screen-reader-skills`.
+To update after a change, commit and run `claude plugin update screen-reader-skills@screen-reader-skills`. Each `@guidepup/guidepup` version pins one reader build. After a Guidepup update, run the `install` step of the OS setup again.
 
 ## macOS setup
 
@@ -40,7 +40,7 @@ Do these steps once per machine for VoiceOver.
 2. In VoiceOver Utility, General, tick "Allow VoiceOver to be controlled with AppleScript".
 3. In System Settings, Privacy and Security, add the terminal app to Accessibility and to Full Disk Access.
 4. Run `npx @guidepup/setup@0.29.3 setup --macos-ignore-tcc-db`.
-5. Run `npx @guidepup/setup@0.29.3 install`.
+5. In the repository root, run `npx @guidepup/setup@0.29.3 install`.
 6. On the first run, allow the Automation prompts for VoiceOver, Safari and System Events.
 7. Run `node scripts/check.mjs voiceover`. It must print no `FAIL` line.
 
@@ -54,11 +54,12 @@ In Claude Code, a VoiceOver run needs the Bash sandbox off. The skill asks for i
 
 Do these steps once per machine for NVDA.
 
-1. Install Google Chrome. For Firefox runs, install Firefox.
-2. Run `npx @guidepup/setup@0.29.3 install`.
-3. Run `node scripts/check.mjs nvda`. It must print no `FAIL` line.
+1. In the repository root, run `npx @guidepup/setup@0.29.3 install`.
+2. Run `node scripts/check.mjs nvda`. It must print no `FAIL` line.
 
-Step 2 downloads a portable NVDA with the Guidepup add-on to `%LOCALAPPDATA%\guidepup\`. An installed NVDA is not needed. The `setup` command does nothing on Windows.
+Step 1 downloads a portable NVDA with the Guidepup add-on to `%LOCALAPPDATA%\guidepup\`. An installed NVDA is not needed.
+
+The first run of a new NVDA build shows a Windows Firewall prompt for "NVDA application (no UIAccess)". Select Cancel, and run again. Guidepup connects through `127.0.0.1`, so it does not need the rule.
 
 ## Usage
 
@@ -88,6 +89,7 @@ Run a script with `--help` for all options. Without `--out`, the script writes t
 | --- | --- |
 | `VoiceOver cannot be started`, with `Failed to mount Guidepup preferences` and `EPERM` on a `symlink` | Give the terminal app Full Disk Access, macOS step 3. In Claude Code, run with the sandbox off. |
 | `ERR_MODULE_NOT_FOUND` for `@guidepup/guidepup` | Run `npm ci` in the plugin root. The scripts import from their own `node_modules`. |
+| `NVDA is not installed` | Do Windows setup step 1 again. A Guidepup update can pin a new NVDA build. |
 | `No answer from <url>` | Start the dev server, or fix the host and the port. |
 | `Unknown keys: Esc` | Use a Guidepup key name, such as `Escape`. See [references/steps.md](references/steps.md). |
 | `No phrase matched` after 20 Tab presses | Read the `setup` entries of the log. Fix `--focus` to match a phrase or the item text. |
@@ -95,3 +97,4 @@ Run a script with `--help` for all options. Without `--out`, the script writes t
 | VoiceOver stays on after a stopped run | Run `osascript -e 'tell application "VoiceOver" to quit'`. |
 | NVDA reads the terminal, not the page | Run one script per shell command. |
 | `No window "<title>" in front` | Close other windows of the page in that browser, and run again. The `activate` lines of the output give what NVDA read. |
+| `No window "<title>" in front`, and NVDA read "Windows Security" | Answer the Windows Firewall prompt for NVDA. See Windows setup. |

@@ -1,6 +1,6 @@
 # Phrase log
 
-Rules that apply to both VoiceOver and NVDA with Guidepup 0.36.4 and 0.37.0. The reader files hold the rules of one reader.
+Rules that apply to both VoiceOver and NVDA with Guidepup 0.36.4 to 0.39.0. The reader files hold the rules of one reader.
 
 ## How Guidepup logs
 

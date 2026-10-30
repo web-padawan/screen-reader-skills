@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { checkUrl, normalizeUrl, programPaths } from './lib/util.mjs';
 
@@ -71,6 +72,10 @@ if (missing.length) {
 } else {
   ok('Node modules installed');
 }
+// The folder of the Guidepup package that the reader scripts import.
+const guidepupDir = missing.includes('@guidepup/guidepup')
+  ? undefined
+  : path.dirname(fileURLToPath(import.meta.resolve('@guidepup/guidepup/package.json')));
 
 if (process.platform === 'darwin' && readerName === 'voiceover') {
   if (output('defaults', ['read', 'com.apple.VoiceOver4/default', 'SCREnableAppleScript']) === '1') {
@@ -100,8 +105,18 @@ if (process.platform === 'darwin' && readerName === 'voiceover') {
 }
 
 if (process.platform === 'win32' && readerName === 'nvda') {
-  if (fs.existsSync(path.join(cachePath, 'nvda'))) ok(`Guidepup NVDA in ${cachePath}`);
-  else fail(`No Guidepup NVDA in ${cachePath}`, 'README: Windows Setup, step 2.');
+  // Guidepup runs only the NVDA build of its manifest, so a Guidepup update can need a new install. The install
+  // reads the manifest of the Guidepup in its working folder, so the fix names the folder above node_modules.
+  if (guidepupDir) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(guidepupDir, 'manifest.json'), 'utf8'));
+    const { version } = manifest.screenReaders.find(({ id }) => id === 'nvda').assets[0];
+    if (fs.existsSync(path.join(cachePath, 'nvda', 'all', version, 'extracted', 'nvda.exe'))) {
+      ok(`Guidepup NVDA ${version} in ${cachePath}`);
+    } else {
+      const project = path.resolve(guidepupDir, '..', '..', '..');
+      fail(`No Guidepup NVDA ${version} in ${cachePath}`, `README: Windows Setup, step 1. Run it in ${project}.`);
+    }
+  }
 
   const find = (...parts) => programPaths(parts).find((file) => fs.existsSync(file));
   if (find('Google', 'Chrome', 'Application', 'chrome.exe')) ok('Google Chrome installed');
