@@ -19,7 +19,7 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
-import { chromium } from 'playwright';
+import { chromium, firefox } from 'playwright';
 import { checkUrl, containsFocus, logName, parseRunOptions, stripPrefixes, targetExpression } from './util.mjs';
 
 export const EXIT = { ok: 0, error: 1, usage: 2, unavailable: 3, noFocus: 4 };
@@ -68,23 +68,32 @@ export async function focusBefore(page, selector) {
   return false;
 }
 
+// The installed browsers that Playwright launches. `moz-firefox` is the installed Firefox through WebDriver BiDi,
+// not the Playwright build of Firefox.
+const BROWSERS = {
+  chrome: { type: chromium, channel: 'chrome' },
+  firefox: { type: firefox, channel: 'moz-firefox' },
+};
+
 /**
- * Opens the page in the installed Google Chrome through Playwright.
+ * Opens the page in the installed Google Chrome or Firefox through Playwright, with a new profile.
+ * @param {'chrome' | 'firefox'} name
  * @param {string} url
- * @param {{ args?: string[], focusSelector?: string }} [options] With `focusSelector`, the first Tab of the run
- *   lands on that element.
+ * @param {{ args?: string[], prefs?: Record<string, unknown>, focusSelector?: string }} [options] `prefs` are
+ *   Firefox preferences. With `focusSelector`, the first Tab of the run lands on that element.
  * @return {Promise<{ title: string, close: () => Promise<void> }>}
  */
-export async function openChrome(url, { args = [], focusSelector } = {}) {
-  const chrome = await chromium.launch({ channel: 'chrome', headless: false, args });
+export async function openBrowser(name, url, { args = [], prefs, focusSelector } = {}) {
+  const { type, channel } = BROWSERS[name];
+  const browser = await type.launch({ channel, headless: false, args, ...(prefs && { firefoxUserPrefs: prefs }) });
   try {
-    const page = await chrome.newPage();
+    const page = await browser.newPage();
     await page.goto(url);
     if (focusSelector) await focusBefore(page, focusSelector);
     await page.bringToFront();
-    return { title: await page.title(), close: () => chrome.close() };
+    return { title: await page.title(), close: () => browser.close() };
   } catch (error) {
-    await chrome.close();
+    await browser.close();
     throw error;
   }
 }

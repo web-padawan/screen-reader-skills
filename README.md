@@ -94,6 +94,7 @@ Run a script with `--help` for all options. Without `--out`, the script writes t
 | `ERR_MODULE_NOT_FOUND` for `@guidepup/guidepup` | Run `npm ci` in the plugin root. The scripts import from their own `node_modules`. |
 | `NVDA is not installed` | Do Windows setup step 1 again. A Guidepup update can pin a new NVDA build. |
 | `Safari blocks JavaScript from Apple Events` | Do macOS setup step 7, or run without `--focus-selector`. |
+| `Cannot find Firefox installation for channel 'moz-firefox'` | Install Firefox in the program folders or in the folder of the user. |
 | `No answer from <url>` | Start the dev server, or fix the host and the port. |
 | `Unknown keys: Esc` | Use a Guidepup key name, such as `Escape`. See [references/steps.md](references/steps.md). |
 | `No phrase matched` after 20 Tab presses | Read the `setup` entries of the log. Fix `--focus` to match a phrase or the item text. |

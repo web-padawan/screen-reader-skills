@@ -1,22 +1,17 @@
 // Runs key steps on a page with NVDA through Guidepup and writes the spoken phrases. Windows only.
 // `node scripts/nvda.mjs --help` lists the options and the step commands. lib/runner.mjs describes the run.
-// - Chrome is the installed Google Chrome through Playwright. Firefox is the installed Firefox with a
-//   new profile.
+// - Chrome is the installed Google Chrome, and Firefox the installed Firefox, through Playwright with a new
+//   profile.
 // Requires the Windows setup of README.md.
 import { nvda, WindowsKeyCodes, WindowsModifiers } from '@guidepup/guidepup';
-import { execFile, spawn } from 'node:child_process';
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { delay, log, openChrome, runSteps } from './lib/runner.mjs';
-import { programPaths } from './lib/util.mjs';
+import { delay, log, openBrowser, runSteps } from './lib/runner.mjs';
 
-const FIREFOX_PATHS = programPaths(['Mozilla Firefox', 'firefox.exe']);
-
-// Skips the Firefox first-run pages and prompts, so the page has focus.
+// Skips the Firefox first-run pages and prompts, so the page has focus. Playwright sets more of them.
 // The welcome, terms of use and upgrade dialogs follow the recommended prefs of geckodriver.
+// The last three turn off the testing modes of Playwright and of the Firefox remote agent. They fake the focus
+// and the window activity, and NVDA follows the real focus.
 const FIREFOX_PREFS = {
   'app.normandy.enabled': false,
   'browser.aboutwelcome.enabled': false,
@@ -33,6 +28,9 @@ const FIREFOX_PREFS = {
   'termsofuse.bypassNotification': true,
   'toolkit.telemetry.reportingpolicy.firstRun': false,
   'trailhead.firstrun.didSeeAboutWelcome': true,
+  'focusmanager.testmode': false,
+  'layout.testing.top-level-always-active': false,
+  'remote.prefs.recommended': false,
 };
 
 const MAX_ACTIVATE_ATTEMPTS = 3;
@@ -79,15 +77,6 @@ $text.ToString()
 `;
 
 const run = promisify(execFile);
-
-const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0' };
-
-/** Decodes the HTML entities that a page title can have, so the title matches the window title. */
-const decodeEntities = (text) =>
-  text
-    .replace(/&#(\d+);/gu, (_, code) => String.fromCodePoint(Number(code)))
-    .replace(/&#x([\da-f]+);/giu, (_, code) => String.fromCodePoint(parseInt(code, 16)))
-    .replace(/&(amp|lt|gt|quot|apos|nbsp);/gu, (_, name) => ENTITIES[name]);
 
 /** Letters and digits only, in lower case, for a loose comparison of spoken text. */
 const normalize = (text) => text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
@@ -137,6 +126,7 @@ process.exitCode = await runSteps({
     '  NVDA+Tab (focus report), NVDA+next, NVDA+previous, NVDA+act,\n' +
     '  NVDA+<keyboardCommands name>, such as NVDA+moveToNextHeading.',
   keys: { codes: WindowsKeyCodes, modifiers: WindowsModifiers },
+  focusSelectorBrowsers: ['chrome', 'firefox'],
   // NVDA commands by the keys of the manual steps.
   commands: {
     Space: (options) => nvda.perform(nvda.keyboardCommands.toggleBetweenBrowseAndFocusMode, options),
@@ -148,31 +138,12 @@ process.exitCode = await runSteps({
     act: (options) => nvda.act(options),
   },
   async open(browser, url, focusSelector) {
-    if (browser === 'chrome') {
-      const chrome = await openChrome(url, { focusSelector });
-      title = chrome.title;
-      return chrome.close;
-    }
-    const firefoxPath = FIREFOX_PATHS.find((file) => fs.existsSync(file));
-    if (!firefoxPath) throw new Error(`No Firefox at ${FIREFOX_PATHS.join(' or ')}`);
-    const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'guidepup-firefox-'));
-    const prefs = Object.entries(FIREFOX_PREFS).map(([key, value]) => `user_pref("${key}", ${JSON.stringify(value)});`);
-    fs.writeFileSync(path.join(profile, 'user.js'), `${prefs.join('\n')}\n`);
-    // -wait-for-browser keeps the launcher process alive, so taskkill /T reaches the browser.
-    const firefox = spawn(firefoxPath, ['-no-remote', '-profile', profile, '-wait-for-browser', url], {
-      stdio: 'ignore',
+    const page = await openBrowser(browser, url, {
+      ...(browser === 'firefox' && { prefs: FIREFOX_PREFS }),
+      focusSelector,
     });
-    const html = url.startsWith('file:')
-      ? fs.readFileSync(fileURLToPath(url), 'utf8')
-      : await (await fetch(url)).text();
-    title = decodeEntities(html.match(/<title>([^<]*)<\/title>/u)?.[1]?.trim() ?? '');
-    await delay(5000);
-    return async () => {
-      await run('taskkill', ['/PID', String(firefox.pid), '/T', '/F']).catch(() => {});
-      await delay(1000);
-      // The killed processes release the profile files late, so retry.
-      fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 500 });
-    };
+    title = page.title;
+    return page.close;
   },
   // Guidepup starts NVDA with its own portable config, so an installed NVDA and its settings do not apply.
   // Speech Viewer off: its window takes the focus from the browser on start.

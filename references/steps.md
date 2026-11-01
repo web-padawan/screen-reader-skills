@@ -93,7 +93,7 @@ The reader receives these commands.
 1. If the target is a selector, such as `#size` or `//select[@id="size"]`, run `probe.mjs --selector <selector>`.
 2. Use `suggestedFocus` of the probe as `--focus`.
 3. If the name is empty, use a role word that the reader speaks, such as `combo box` or `button`.
-4. In Chrome and Safari, also pass `--focus-selector <selector>`. The first <kbd>Tab</kbd> then moves the focus to the target.
+4. Also pass `--focus-selector <selector>`. The first <kbd>Tab</kbd> then moves the focus to the target.
 5. If the target is a label, such as "the Size field", use the label as `--focus`.
 
 A selector goes to `document.querySelector`. A selector that starts with `/` or `(` is XPath. Neither reaches into a shadow root, so select the host of a custom element.

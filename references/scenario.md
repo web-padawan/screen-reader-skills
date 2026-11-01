@@ -47,7 +47,7 @@ The JSON form is the resolved scenario. Pass it with `--scenario <file.json>`. A
 | `url` | string | The page. The path of a local file gets `file://`. Another URL without a scheme gets `http://`. |
 | `browser` | string | `safari` or `chrome` for VoiceOver. `chrome` or `firefox` for NVDA. |
 | `focus` | string | The regex for the focus target. It matches a phrase or the item text. |
-| `focusSelector` | string | The selector of the focus target, CSS or XPath. Chrome and Safari only. |
+| `focusSelector` | string | The selector of the focus target, CSS or XPath. |
 | `steps` | array | A step is a token string, or an object with `key`, `say` and `expect`. |
 
 The script copies `say` and `expect` into the log. It never checks an expectation. The skill compares the phrases with it.

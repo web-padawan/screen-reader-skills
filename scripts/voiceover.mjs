@@ -15,7 +15,7 @@ import {
 } from '@guidepup/guidepup';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { delay, EXIT, ExitError, log, openChrome, runSteps } from './lib/runner.mjs';
+import { delay, EXIT, ExitError, log, openBrowser, runSteps } from './lib/runner.mjs';
 import { focusExpression, VOICEOVER_PREFIXES } from './lib/util.mjs';
 
 const run = promisify(execFile);
@@ -95,7 +95,7 @@ process.exitCode = await runSteps({
   },
   async open(browser, url, focusSelector) {
     if (browser === 'chrome') {
-      const { close } = await openChrome(url, { args: ['--force-renderer-accessibility'], focusSelector });
+      const { close } = await openBrowser('chrome', url, { args: ['--force-renderer-accessibility'], focusSelector });
       return close;
     }
     // Leave a Safari that the user had open. Quit the Safari that this script opened.
