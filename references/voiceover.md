@@ -1,10 +1,11 @@
 # VoiceOver
 
-Verified for VoiceOver with Safari and Chrome on macOS 15, through Guidepup 0.37.0. Guidepup 0.39.0 adds only the navigate-until methods to the VoiceOver code. The `voiceover-safari` and `voiceover-chrome` skills hold the facts of one browser.
+Verified for VoiceOver with Safari and Chrome on macOS 15, through Guidepup 0.37.0. Guidepup 0.39.0 adds only the navigate-until methods to the VoiceOver code. Guidepup 0.40.0 starts the user's VoiceOver again after a run, and unmounts the profile faster. The `voiceover-safari` and `voiceover-chrome` skills hold the facts of one browser.
 
 ## Before a run
 
 - **Profile**: Guidepup starts VoiceOver with its own profile, so VoiceOver Utility settings do not apply. The script disables the hints. The hint "You are currently on..." hides short phrases and adds about 5 seconds per step.
+- **User's VoiceOver**: only one VoiceOver can run. If a VoiceOver that Guidepup did not start runs, the start quits it, and the stop starts it again. With `DEBUG=guidepup:VoiceOver`, the run prints "Quitting a VoiceOver that Guidepup did not start" and "Starting the user's VoiceOver again".
 
 ## Seek capture
 

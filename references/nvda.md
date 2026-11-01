@@ -1,6 +1,6 @@
 # NVDA
 
-Verified for NVDA with Chrome and Firefox on Windows, through Guidepup 0.39.0 and its portable NVDA 2026.3. Seven scenarios of the cleanslate repository gave the same phrases as with Guidepup 0.36.4 and NVDA 2026.2. The `nvda-chrome` and `nvda-firefox` skills hold the facts of one browser.
+Verified for NVDA with Chrome and Firefox on Windows, through Guidepup 0.39.0 and its portable NVDA 2026.3. The NVDA code and the NVDA build of Guidepup 0.40.0 are the same. The `nvda-chrome` and `nvda-firefox` skills hold the facts of one browser.
 
 ## Before a run
 
