@@ -3,8 +3,8 @@
 // - Opens the browser, starts the reader, brings the browser to the front, and presses Tab until a phrase or the
 //   item text matches --focus (a case-insensitive regex). That Tab is the first recorded step. Without --focus,
 //   the steps start at the page start.
-// - --focus-selector <css> (Chrome only) focuses the target and presses Shift+Tab before the reader starts, so
-//   the first Tab lands on the target.
+// - --focus-selector <css> focuses the target and presses Shift+Tab before the reader starts, so the first Tab
+//   lands on the target. The reader script gives the browsers that support it.
 // - Each step uses full capture. --seek-capture initial runs the Tab loop after the first Tab with initial capture.
 //   On a match after the first Tab, it presses Shift+Tab and Tab again with full capture, so step 1 has every
 //   phrase.
@@ -20,7 +20,7 @@ import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import { chromium } from 'playwright';
-import { checkUrl, logName, parseRunOptions, stripPrefixes, targetExpression } from './util.mjs';
+import { checkUrl, containsFocus, logName, parseRunOptions, stripPrefixes, targetExpression } from './util.mjs';
 
 export const EXIT = { ok: 0, error: 1, usage: 2, unavailable: 3, noFocus: 4 };
 
@@ -36,7 +36,7 @@ const t0 = Date.now();
 export const log = (text) => console.log(`${((Date.now() - t0) / 1000).toFixed(1)}s ${text}`);
 
 /** An error that ends the run with a given exit code and no stack trace. */
-class ExitError extends Error {
+export class ExitError extends Error {
   constructor(message, code) {
     super(message);
     this.code = code;
@@ -45,19 +45,6 @@ class ExitError extends Error {
 
 /** Maps a capture mode to the Guidepup value. */
 const toCapture = (mode) => (mode === 'initial' ? 'initial' : true);
-
-/**
- * Returns true if the focus is in the element or in its shadow tree. Runs in the page.
- * @param {Element} target
- */
-function containsFocus(target) {
-  let node = target.ownerDocument.activeElement;
-  while (node?.shadowRoot?.activeElement) node = node.shadowRoot.activeElement;
-  for (; node; node = node.parentNode ?? node.host) {
-    if (node === target) return true;
-  }
-  return false;
-}
 
 /**
  * Focuses the element of the selector, then presses Shift+Tab, so that the next Tab lands on the element.
@@ -121,6 +108,8 @@ export async function openChrome(url, { args = [], focusSelector } = {}) {
  * @param {(browser: string) => Promise<void>} options.activate Brings the browser to the front.
  * @param {() => Promise<string>} [options.rawPhrase] Returns the last phrase as the reader has it.
  * @param {RegExp[]} [options.focusPrefixes] Announcements before the item that --focus must not match.
+ * @param {string[]} [options.focusSelectorBrowsers] The browsers whose `open` supports --focus-selector.
+ *   Default: `['chrome']`.
  * @param {number} [options.settleMs] The wait for the window announcements after the activation. Default 2000.
  * @param {object} [hostOptions] The process parts that a test replaces.
  * @param {string[]} [hostOptions.argv] The arguments. Default: the arguments after the script path.
@@ -287,7 +276,10 @@ export async function runSteps(options, hostOptions = {}) {
   const runAll = async () => {
     const served = await checkUrl(url);
     if (!served.ok) throw new ExitError(served.text, EXIT.unavailable);
-    if (focusSelector && browser !== 'chrome') log(`--focus-selector works in Chrome only. ${browser} ignores it.`);
+    const selectorBrowsers = options.focusSelectorBrowsers ?? ['chrome'];
+    if (focusSelector && !selectorBrowsers.includes(browser)) {
+      log(`--focus-selector works in ${selectorBrowsers.join(' and ')} only. ${browser} ignores it.`);
+    }
 
     log(`page ${url}`);
     opening = options.open(browser, url, focusSelector);

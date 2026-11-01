@@ -100,6 +100,16 @@ if (process.platform === 'darwin' && readerName === 'voiceover') {
   if (output('pgrep', ['-x', 'VoiceOver'])) warn('VoiceOver is on', 'The run stops it. Turn it off to keep it.');
   else ok('VoiceOver off');
 
+  // The Safari Developer setting. Only --focus-selector in Safari needs it.
+  if (output('defaults', ['read', 'com.apple.Safari', 'AllowJavaScriptFromAppleEvents']) === '1') {
+    ok('Safari JavaScript from Apple Events on');
+  } else {
+    warn(
+      'Safari JavaScript from Apple Events off',
+      'Needed for --focus-selector in Safari. README: macOS setup, step 7.',
+    );
+  }
+
   if (fs.existsSync('/Applications/Google Chrome.app')) ok('Google Chrome installed');
   else warn('No Google Chrome', 'Install it for --browser chrome and for probe.mjs.');
 }

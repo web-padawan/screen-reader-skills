@@ -24,4 +24,4 @@ This skill runs one reader with one browser. Follow [workflow.md](../../referenc
 - **Start mode**: Firefox runs start in browse mode or in focus mode. Put a mode step after the focus Tab when the next keys need one mode.
 - **One toggle on a combo box**: `NVDA+Space` on a focused combo box logs "Browse mode" and "Focus mode" in one step. NVDA returns to focus mode at once.
 - **Object replacement character**: a phrase can hold `￼` (U+FFFC). Quote it as it is.
-- **No focus selector**: `--focus-selector` works in Chrome only. The Tab loop starts at the page start.
+- **No focus selector**: Firefox ignores `--focus-selector`. The Tab loop starts at the page start.

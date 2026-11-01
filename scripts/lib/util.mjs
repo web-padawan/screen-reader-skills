@@ -56,6 +56,33 @@ export function targetExpression(selector) {
 }
 
 /**
+ * Returns true if the focus is in the element or in its shadow tree. Runs in the page.
+ * @param {Element} target
+ */
+export function containsFocus(target) {
+  let node = target.ownerDocument.activeElement;
+  while (node?.shadowRoot?.activeElement) node = node.shadowRoot.activeElement;
+  for (; node; node = node.parentNode ?? node.host) {
+    if (node === target) return true;
+  }
+  return false;
+}
+
+/**
+ * Returns a page expression that focuses the element of the selector, for the Safari `do JavaScript`.
+ * The focus method of a custom element can delegate the focus to an inner element.
+ * @param {string} selector A CSS selector, or XPath if it starts with `/` or `(`.
+ * @return {string} An expression that gives `focused`, `unfocused` if the focus is not in the element or in its
+ *   shadow tree, or `none` if no element matches.
+ */
+export function focusExpression(selector) {
+  return (
+    `(() => { const target = ${targetExpression(selector)}; if (!target) return 'none'; target.focus();` +
+    ` return (${containsFocus})(target) ? 'focused' : 'unfocused'; })()`
+  );
+}
+
+/**
  * Returns the paths of a Windows program in the folders for all users, then in the folder for the current user.
  * @param {string[]} parts Such as `['Mozilla Firefox', 'firefox.exe']`.
  * @param {Record<string, string | undefined>} [env] The environment.

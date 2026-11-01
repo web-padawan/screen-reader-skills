@@ -31,5 +31,6 @@ This skill runs one reader with one browser. Follow [workflow.md](../../referenc
 - **Required field**: Safari reads an empty required field as "invalid data" before any input. Chrome does not. Compare both browsers before you report it.
 - **Safari AutoFill**: typing in a text field can open the Safari AutoFill menu. Escape then closes that menu, and the log reads "Closing menu". Check typing with `voiceover-chrome`.
 - **Safari cache**: Safari keeps old modules after a branch switch on the same port. Use a new dev server port per branch.
-- **Page changes**: Safari blocks `do JavaScript` from Apple Events. To try a DOM change, write a temporary page and delete it after.
+- **Focus selector**: `--focus-selector` focuses the target through `do JavaScript`, then presses Shift+Tab before VoiceOver starts. It needs macOS setup step 7 of the README. Without it, the run stops with "Safari blocks JavaScript from Apple Events".
+- **Page changes**: the script opens the page in a new window, so a `do JavaScript` change before the run does not reach it. To try a DOM change, write a temporary page and delete it after.
 - **Playwright WebKit**: its accessibility tree differs from Safari. Do not use it for a VoiceOver question.

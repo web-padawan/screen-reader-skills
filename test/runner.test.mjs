@@ -335,6 +335,28 @@ describe('runSteps', () => {
       assert.equal(events[0], 'open other');
     });
 
+    it('passes --focus-selector to open, and notes a browser that ignores it', async () => {
+      const opened = [];
+      const runWith = async (browser) => {
+        const { options } = fakeProfile(fakeReader({ stops: STOPS }), {
+          focusSelectorBrowsers: ['web'],
+          async open(name, _url, selector) {
+            opened.push([name, selector]);
+            return async () => {};
+          },
+        });
+        console.log.mock.resetCalls();
+        await run(options, ['--url', url, '--browser', browser, '--focus-selector', '#size']);
+        return console.log.mock.calls.some(({ arguments: [text] }) => /works in web only\. other ignores/u.test(text));
+      };
+      assert.equal(await runWith('web'), false);
+      assert.equal(await runWith('other'), true);
+      assert.deepEqual(opened, [
+        ['web', '#size'],
+        ['other', '#size'],
+      ]);
+    });
+
     it('writes the run fields into the log', async () => {
       const reader = fakeReader({ stops: STOPS });
       const { options } = fakeProfile(reader);

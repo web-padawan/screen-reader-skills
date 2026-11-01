@@ -42,11 +42,14 @@ Do these steps once per machine for VoiceOver.
 4. Run `npx @guidepup/setup@0.29.3 setup --macos-ignore-tcc-db`.
 5. In the repository root, run `npx @guidepup/setup@0.29.3 install`.
 6. On the first run, allow the Automation prompts for VoiceOver, Safari and System Events.
-7. Run `node scripts/check.mjs voiceover`. It must print no `FAIL` line.
+7. In Safari Settings, Advanced, tick "Show features for web developers". Then in the Developer tab, tick "Allow JavaScript from Apple Events".
+8. Run `node scripts/check.mjs voiceover`. It must print no `FAIL` line.
 
 Step 4 enables the AppleScript control that Guidepup reads. The tick of step 2 alone does not set it. System Integrity Protection blocks the `TCC.db` edit, so the flag skips that edit.
 
 Step 5 downloads the Guidepup VoiceOver profile to `~/Library/Caches/guidepup/`. Guidepup links that profile into `~/Library/Group Containers/group.com.apple.VoiceOver/`. That link needs the Full Disk Access of step 3.
+
+Step 7 lets `--focus-selector` focus the target in Safari through `do JavaScript`. Without it, a Safari run with `--focus-selector` fails. The setting lets each app with the Automation permission for Safari run JavaScript in all Safari tabs.
 
 In Claude Code, a VoiceOver run needs the Bash sandbox off. The skill asks for it.
 
@@ -77,7 +80,7 @@ The scripts also run without Claude:
 
 ```sh
 node scripts/probe.mjs --url examples/pages/select.html --selector "#size"
-node scripts/voiceover.mjs --url examples/pages/select.html --focus Size --steps Alt+ArrowDown,ArrowDown,Enter
+node scripts/voiceover.mjs --url examples/pages/select.html --focus Size --focus-selector "#size" --steps Alt+ArrowDown,ArrowDown,Enter
 node scripts/nvda.mjs --url examples/pages/select.html --focus Size --focus-selector "#size" --steps Alt+ArrowDown,Enter
 ```
 
@@ -90,6 +93,7 @@ Run a script with `--help` for all options. Without `--out`, the script writes t
 | `VoiceOver cannot be started`, with `Failed to mount Guidepup preferences` and `EPERM` on a `symlink` | Give the terminal app Full Disk Access, macOS step 3. In Claude Code, run with the sandbox off. |
 | `ERR_MODULE_NOT_FOUND` for `@guidepup/guidepup` | Run `npm ci` in the plugin root. The scripts import from their own `node_modules`. |
 | `NVDA is not installed` | Do Windows setup step 1 again. A Guidepup update can pin a new NVDA build. |
+| `Safari blocks JavaScript from Apple Events` | Do macOS setup step 7, or run without `--focus-selector`. |
 | `No answer from <url>` | Start the dev server, or fix the host and the port. |
 | `Unknown keys: Esc` | Use a Guidepup key name, such as `Escape`. See [references/steps.md](references/steps.md). |
 | `No phrase matched` after 20 Tab presses | Read the `setup` entries of the log. Fix `--focus` to match a phrase or the item text. |

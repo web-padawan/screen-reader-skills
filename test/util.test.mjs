@@ -5,9 +5,11 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import vm from 'node:vm';
 import {
   checkUrl,
   compileFocus,
+  focusExpression,
   isKnownKey,
   logName,
   normalizeUrl,
@@ -269,6 +271,48 @@ describe('targetExpression', () => {
         `document.evaluate(${JSON.stringify(selector)}, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue`,
       );
     }
+  });
+});
+
+describe('focusExpression', () => {
+  /** Runs the expression on a fake document with the elements by selector. */
+  const evaluate = (selector, elements) => {
+    const document = { activeElement: null, querySelector: (text) => elements[text] ?? null };
+    for (const element of Object.values(elements)) element.ownerDocument = document;
+    return vm.runInNewContext(focusExpression(selector), { document });
+  };
+  const focusable = () => ({
+    parentNode: null,
+    focus() {
+      this.ownerDocument.activeElement = this;
+    },
+  });
+
+  it('gives focused when the element takes the focus', () => {
+    assert.equal(evaluate('#size', { '#size': focusable() }), 'focused');
+  });
+
+  it('gives focused when the element delegates the focus into its shadow tree', () => {
+    const inner = { parentNode: null };
+    const shadowRoot = { activeElement: inner, host: null };
+    const host = {
+      parentNode: null,
+      shadowRoot,
+      focus() {
+        this.ownerDocument.activeElement = this;
+      },
+    };
+    inner.parentNode = shadowRoot;
+    shadowRoot.host = host;
+    assert.equal(evaluate('vaadin-select', { 'vaadin-select': host }), 'focused');
+  });
+
+  it('gives unfocused when the element takes no focus', () => {
+    assert.equal(evaluate('#label', { '#label': { parentNode: null, focus() {} } }), 'unfocused');
+  });
+
+  it('gives none when no element matches', () => {
+    assert.equal(evaluate('#missing', {}), 'none');
   });
 });
 
