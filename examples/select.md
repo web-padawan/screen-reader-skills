@@ -18,4 +18,4 @@ Focus: #size
 | 2 | "Large" | "Large" | "Large, not selected, 3 of 3" | "Large, 3 of 3" |
 | 3 | "Closing menu Large Size pop up button" | "Large Size menu pop up collapsed button" | "Size, combo box, Large, collapsed" | "Browse mode. Size, combo box, Large, collapsed" |
 
-The NVDA runs used `--focus-selector "#size"`. The select is the first element that can take focus, so the Focus row reads the document first. See [nvda.md](../references/nvda.md). Without the selector, the NVDA run in Firefox read "Size, combo box, Medium, collapsed" at the focus Tab.
+The NVDA runs used `--focus-selector "#size"`. The select is the first element that can take focus, so the Focus row reads the document first. See [nvda.md](../references/nvda.md). Without the selector, the focus Tab read "Native select, document. heading, level 1, Native select. Size, combo box, Medium, collapsed. Focus mode" in Chrome and "Size, combo box, Medium, collapsed" in Firefox. The other steps read the same.

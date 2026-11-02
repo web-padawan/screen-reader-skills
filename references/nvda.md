@@ -1,11 +1,11 @@
 # NVDA
 
-Verified for NVDA with Chrome and Firefox on Windows, through Guidepup 0.39.0 and its portable NVDA 2026.3. The NVDA code and the NVDA build of Guidepup 0.40.0 are the same. The `nvda-chrome` and `nvda-firefox` skills hold the facts of one browser.
+Verified for NVDA with Chrome and Firefox on Windows, through Guidepup 0.40.0 and its portable NVDA 2026.3. The `nvda-chrome` and `nvda-firefox` skills hold the facts of one browser.
 
 ## Before a run
 
 - **Profile**: Guidepup starts its own portable NVDA. An installed NVDA and its settings do not apply. The script disables the Speech Viewer, because its window takes the focus from the browser and adds Tab stops.
-- **Installed NVDA**: only one NVDA can run. If an installed NVDA runs, the start quits it, and the stop starts it again. With `DEBUG=guidepup:NVDA`, the run prints "Quitting an NVDA that Guidepup did not start" and "Starting the user's NVDA again". If no NVDA runs, the start quits nothing. Guidepup 0.37.0 and earlier quit the installed NVDA and did not start it again.
+- **Installed NVDA**: only one NVDA can run. If an installed NVDA runs, the start quits it, and the stop starts it again. With `DEBUG=guidepup:NVDA`, the run prints "Quitting an NVDA that Guidepup did not start" and "Starting the user's NVDA again". If no NVDA runs, the start quits nothing.
 - **Dev server**: `localhost` is the Windows machine. For a server on another machine, start it on `0.0.0.0` and pass its IP address.
 - **Page title**: the script finds the browser window by the page title. Do not open the same page in another window of that browser.
 - **One run per shell call**: in a loop, the runs after the first cannot focus the browser. NVDA then reads the terminal.
@@ -24,7 +24,7 @@ Verified for NVDA with Chrome and Firefox on Windows, through Guidepup 0.39.0 an
 ## Reading the log
 
 - **Silent step**: a silent step logs one empty phrase.
-- **Focus selector on the first element**: `--focus-selector` presses Shift+Tab before the run. If the target is the first element that can take focus, the focus leaves the page. The focus Tab then enters the document again, and NVDA reads "<title>, document" two times in the phrase, such as "Native select, document. Native select, document. Size, combo box, …" in Chrome. In Firefox without `--focus-selector`, the focus Tab read the target only.
+- **Focus selector on the first element**: `--focus-selector` presses Shift+Tab before the run. If the target is the first element that can take focus, the focus leaves the page. The focus Tab then enters the document again, and NVDA reads "<title>, document" two times in the phrase, such as "Native select, document. Native select, document. Size, combo box, …" in Chrome. Without `--focus-selector`, Chrome read "<title>, document" one time and Firefox read the target only.
 - **Spoken form**: NVDA speaks some names in another form. "A1" becomes "A 1". A `focus` regex must match the spoken form, such as `A ?1`.
 
 ## Context menu

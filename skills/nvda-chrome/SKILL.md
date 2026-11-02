@@ -23,3 +23,4 @@ This skill runs one reader with one browser. Follow [workflow.md](../../referenc
 - **Chrome window**: the script starts the installed Google Chrome through Playwright, with a new profile.
 - **Start mode**: Chrome runs mostly start in browse mode.
 - **Mode phrase on Tab**: Chrome often logs "Focus mode" on the Tab to a field.
+- **Page on the first Tab**: the focus Tab can read the page before the target, such as "Native select, document. heading, level 1, Native select. Size, combo box, Medium, collapsed. Focus mode". Match `--focus` to the target only.
