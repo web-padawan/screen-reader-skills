@@ -20,8 +20,9 @@ This skill runs one reader with one browser. Follow [workflow.md](../../referenc
 
 ## Firefox gotchas
 
-- **Firefox window**: the script starts the installed Firefox through the Playwright `moz-firefox` channel, with a new profile that skips the first-run pages. Playwright finds Firefox in the program folders and in the folder of the user. No NVDA run has checked this start yet. Compare the first runs with a run of an earlier commit.
+- **Firefox window**: the script starts the installed Firefox through the Playwright `moz-firefox` channel, with a new profile that skips the first-run pages. Playwright finds Firefox in the program folders and in the folder of the user. An NVDA run on `examples/pages/select.html` gave the same phrases as the earlier start, which ran Firefox without Playwright.
 - **Remote control**: Firefox shows a striped address bar and a robot icon, and `navigator.webdriver` is true. The toolbar Tab stops can read differently. The script turns off the focus test modes of Playwright and of the Firefox remote agent.
 - **Start mode**: Firefox runs start in browse mode or in focus mode. Put a mode step after the focus Tab when the next keys need one mode.
+- **Focus selector on the first element**: after the document re-entry (see [nvda.md](../../references/nvda.md)), Firefox stays in browse mode. The next steps then log "Focus mode" or "Browse mode".
 - **One toggle on a combo box**: `NVDA+Space` on a focused combo box logs "Browse mode" and "Focus mode" in one step. NVDA returns to focus mode at once.
 - **Object replacement character**: a phrase can hold `￼` (U+FFFC). Quote it as it is.

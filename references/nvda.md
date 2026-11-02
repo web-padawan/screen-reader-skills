@@ -24,6 +24,7 @@ Verified for NVDA with Chrome and Firefox on Windows, through Guidepup 0.39.0 an
 ## Reading the log
 
 - **Silent step**: a silent step logs one empty phrase.
+- **Focus selector on the first element**: `--focus-selector` presses Shift+Tab before the run. If the target is the first element that can take focus, the focus leaves the page. The focus Tab then enters the document again, and NVDA reads "<title>, document" two times in the phrase, such as "Native select, document. Native select, document. Size, combo box, …" in Chrome. In Firefox without `--focus-selector`, the focus Tab read the target only.
 - **Spoken form**: NVDA speaks some names in another form. "A1" becomes "A 1". A `focus` regex must match the spoken form, such as `A ?1`.
 
 ## Context menu
