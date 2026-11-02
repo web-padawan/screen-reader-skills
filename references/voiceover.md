@@ -1,6 +1,6 @@
 # VoiceOver
 
-Verified for VoiceOver with Safari and Chrome on macOS 15, through Guidepup 0.37.0. Guidepup 0.39.0 adds only the navigate-until methods to the VoiceOver code. Guidepup 0.40.0 starts the user's VoiceOver again after a run, and unmounts the profile faster. The `voiceover-safari` and `voiceover-chrome` skills hold the facts of one browser.
+Verified for VoiceOver with Safari and Chrome on macOS 15, through Guidepup 0.40.0. The `voiceover-safari` and `voiceover-chrome` skills hold the facts of one browser.
 
 ## Before a run
 
