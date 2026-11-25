@@ -14,6 +14,7 @@ Rules that apply to both VoiceOver and NVDA with Guidepup 0.40.0. The reader fil
 
 - The log has no timing of the speech. It cannot show a cut-off. Listen for timing and cut-off checks.
 - A fast second announcement can make the log miss a phrase.
+- A pause of more than 1 second ends the capture. The log then loses the rest of a long announcement, such as say all or the content of a focused container. The rest is not in the next step either, because the next key stops the speech. No option sets this silence. For a longer one, run a wrapper script that changes each 1000 ms `setTimeout` to 6000 ms, then imports `scripts/nvda.mjs`.
 - A run can log a short phrase or an empty one. The next step then has the late phrase. Repeat such a run.
 - A notification also appears in the log. Enable Do Not Disturb before a run.
 
